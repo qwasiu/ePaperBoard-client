@@ -45,7 +45,8 @@ function Main() {
   });
   const [dznData,setDznData] = useState({
     state:{"acces":"error","boiler":"error","heater":"error","irrigation":"error"},
-    status:{indoor:{temp:0},outdoor:{temp:0}}
+    status:{indoor:{temp:0},outdoor:{temp:0}},
+    error: true
   });
 
   useEffect(() => {
@@ -66,22 +67,21 @@ function Main() {
   useEffect(() => {
     if(envData !== undefined) {
     const fetchDznData = async () => {
-      let dznState 
-      let dznSensor
       try {
-         dznState = await fetchPlus(`http://${envData.oldBoardIP}:${envData.oldBoardPort}/dzn/proxy/data/state/get`);
-         dznSensor = await fetchPlus(`http://${envData.oldBoardIP}:${envData.oldBoardPort}/dzn/proxy/data/sensors/get`);
+        const automation = await fetchPlus(`http://${envData.oldBoardIP}:${envData.oldBoardPort}/automation`);
+        setDznData({ ...automation, error: false });
       } catch (error) {
-        // Handle the error according to your application's needs
+        setDznData((prev) => ({ ...prev, error: true }));
       }
-      setDznData({ state: await dznState, status: await dznSensor });
     }
     const fetchForecast = async () => {
       let data
       try {
          data = await fetchPlus(`http://${envData.oldBoardIP}:${envData.oldBoardPort}/forecast/getforecast?city=${envData.forecastCity}`)
       }
-      catch (error) {}
+      catch (error) {
+        return;
+      }
 
       const currentForecast = {
         date:data.current.dt * 1000,
@@ -93,7 +93,7 @@ function Main() {
         icon:data.current.weather[0].icon,
       }
 
-      const hourlyForecast = [data.hourly[9],data.hourly[12],data.hourly[15]].map((hour) => {
+      const hourlyForecast = [data.hourly[3],data.hourly[6],data.hourly[9]].map((hour) => {
         const date = new Date(hour.dt * 1000); // convert to milliseconds by multiplying by 1000
         const dateString = date.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
         return {
@@ -132,7 +132,7 @@ function Main() {
     };
     const calcMoonPhase = () => {
 
-      const moonPhase = SunCalc.getMoonIllumination(/*Date*/new Date()).fraction;
+      const moonPhase = SunCalc.getMoonIllumination(/*Date*/new Date()).phase;
       let moonIcon = "0"
       if (moonPhase === 0) {
         moonIcon = "0";

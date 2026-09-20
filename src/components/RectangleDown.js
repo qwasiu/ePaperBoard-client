@@ -35,13 +35,9 @@ export default function RectangleDown(props) {
         <img className='rectangledown_icon' src={svgIcons[props.dznData.state.acces]} alt={props.dznData.state.acces} />
         {props.dznData.state.irrigation === "active" && <img className='rectangledown_icon' src={irrigation} alt="irrigation" />}     
         {props.dznData.state.heater === "active" && <img className='rectangledown_icon' src={heater} alt="heater" />}        
-        {props.dznData.state.boiler === "active" && <img className='rectangledown_icon' src={boiler} alt="boiler" />}        
-        <img className='rectangledown_icon' src={error} alt="error" />
-
-
-
-
-      </div>  
+        {props.dznData.state.boiler === "active" && <img className='rectangledown_icon' src={boiler} alt="boiler" />}
+        {props.dznData.error && <img className='rectangledown_icon' src={error} alt="error" />}
+      </div>
     </div>
   )
 }
