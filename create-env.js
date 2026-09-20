@@ -9,7 +9,7 @@ const defaultValues = {
 // Convert default values to .env format
 const envContent = Object.entries(defaultValues)
   .map(([key, value]) => `${key}=${value}`)
-  .join('\n');
+  .join('\n') + '\n';
 
 // Write to .env.development file
 fs.writeFileSync('.env.development', envContent);
